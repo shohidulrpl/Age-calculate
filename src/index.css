@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #8ab4f8;
+  --color-brand-secondary: #c2e7ff;
+  --color-surface-bg: #121212;
+  --color-surface-card: #1e1e1e;
+  --color-surface-input: #2d2d2d;
+  --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+}
+
+@layer base {
+  body {
+    @apply transition-colors duration-300 bg-surface-bg text-white selection:bg-brand-primary selection:text-black;
+  }
+}
+
+.material-card {
+  @apply bg-surface-card rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-white/5 p-6;
+}
+
+.input-field {
+  @apply w-full bg-surface-input border-none border-b-2 border-transparent focus:border-brand-primary rounded-t-lg rounded-b-none px-4 py-3 outline-none transition-all text-white placeholder:text-gray-500;
+}
+
+.btn-primary {
+  @apply bg-brand-primary text-black font-semibold py-3 px-6 rounded-full hover:opacity-90 active:scale-95 transition-all;
+}
+
+.stat-box {
+  @apply bg-brand-primary/10 rounded-xl p-4 text-center border border-brand-primary/5;
+}
+
+.label-text {
+  @apply block text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-2;
+}
+
+.divider {
+  @apply h-[1px] bg-white/10 my-6;
+}
