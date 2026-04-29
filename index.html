@@ -1,13 +1,676 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --glass: rgba(255, 255, 255, 0.05);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+        }
 
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --border: rgba(148, 163, 184, 0.3);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            --glass: rgba(255, 255, 255, 0.6);
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 50%);
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px var(--accent);
+        }
+
+        .theme-icon {
+            font-size: 1.1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'Outfit', 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+            transition: all 0.5s ease;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: var(--glass);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.02em;
+        }
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .calculate-btn:hover::before {
+            left: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px var(--accent);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            padding: 1.1rem 1.5rem;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.2);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+
+        .results.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+        }
+
+        .result-item {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem 0.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .total-days {
+            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .total-days.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .total-days::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .total-days-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .total-days-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 580px) {
+            .results-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            .reset-btn {
+                padding: 0.9rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span class="theme-icon" id="themeIcon">☀️</span>
+            <span id="themeText">Light Mode</span>
+        </button>
+
+        <div class="header">
+            <h1>Age Calculator</h1>
+            <p>Made by Shohidul Islam</p>
+        </div>
+
+        <div class="card">
+            <div class="input-group">
+                <label for="dob">Date of Birth</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🎂</span>
+                    <input type="datetime-local" id="dob" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="targetDate">Date of Difference</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📅</span>
+                    <input type="datetime-local" id="targetDate" required>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="calculate-btn" onclick="calculateAge()">
+                    Calculate Age
+                </button>
+                <button class="reset-btn" onclick="resetForm()" title="Reset all fields">
+                    <span>↺</span>
+                    <span>Reset</span>
+                </button>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                <span>⚠️</span>
+                <span id="errorText"></span>
+            </div>
+
+            <div class="results" id="results">
+                <div class="results-header">
+                    <h2>Age Result</h2>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-item">
+                        <div class="result-value" id="years">0</div>
+                        <div class="result-label">Years</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="months">0</div>
+                        <div class="result-label">Months</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="days">0</div>
+                        <div class="result-label">Days</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="hours">0</div>
+                        <div class="result-label">Hours</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="minutes">0</div>
+                        <div class="result-label">Minutes</div>
+                    </div>
+                </div>
+
+                <div class="total-days" id="totalDaysBox">
+                    <div class="total-days-label">Total Days Elapsed</div>
+                    <div class="total-days-value" id="totalDays">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const formatted = formatDateTimeLocal(now);
+            document.getElementById('targetDate').value = formatted;
+
+            const defaultDob = new Date(now.getFullYear() - 25, now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
+            document.getElementById('dob').value = formatDateTimeLocal(defaultDob);
+        });
+
+        function formatDateTimeLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        }
+
+        function resetForm() {
+            document.getElementById('dob').value = '';
+
+            const now = new Date();
+            document.getElementById('targetDate').value = formatDateTimeLocal(now);
+
+            const results = document.getElementById('results');
+            results.classList.remove('show');
+
+            document.getElementById('errorMessage').classList.remove('show');
+
+            document.getElementById('years').textContent = '0';
+            document.getElementById('months').textContent = '0';
+            document.getElementById('days').textContent = '0';
+            document.getElementById('hours').textContent = '0';
+            document.getElementById('minutes').textContent = '0';
+            document.getElementById('totalDays').textContent = '0';
+            document.getElementById('totalDaysBox').classList.remove('show');
+        }
+
+        function calculateAge() {
+            const dobInput = document.getElementById('dob').value;
+            const targetInput = document.getElementById('targetDate').value;
+
+            if (!dobInput || !targetInput) {
+                showError('Please fill in both date fields');
+                return;
+            }
+
+            const dob = new Date(dobInput);
+            const target = new Date(targetInput);
+
+            if (isNaN(dob.getTime()) || isNaN(target.getTime())) {
+                showError('Invalid date format');
+                return;
+            }
+
+            if (target < dob) {
+                showError('Target date must be after date of birth');
+                return;
+            }
+
+            const diffMs = target - dob;
+            const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            let years = target.getFullYear() - dob.getFullYear();
+            let months = target.getMonth() - dob.getMonth();
+            let days = target.getDate() - dob.getDate();
+            let hours = target.getHours() - dob.getHours();
+            let minutes = target.getMinutes() - dob.getMinutes();
+
+            if (minutes < 0) {
+                minutes += 60;
+                hours--;
+            }
+            if (hours < 0) {
+                hours += 24;
+                days--;
+            }
+            if (days < 0) {
+                const prevMonth = new Date(target.getFullYear(), target.getMonth(), 0);
+                days += prevMonth.getDate();
+                months--;
+            }
+            if (months < 0) {
+                months += 12;
+                years--;
+            }
+
+            animateValue('years', 0, years, 1000);
+            animateValue('months', 0, months, 1000);
+            animateValue('days', 0, days, 1000);
+            animateValue('hours', 0, hours, 1000);
+            animateValue('minutes', 0, minutes, 1000);
+
+            // Show total days only if over 30 days
+            const totalDaysBox = document.getElementById('totalDaysBox');
+            if (totalDays > 30) {
+                animateValue('totalDays', 0, totalDays, 1500);
+                totalDaysBox.classList.add('show');
+            } else {
+                totalDaysBox.classList.remove('show');
+            }
+
+            const results = document.getElementById('results');
+            results.classList.remove('show');
+            setTimeout(() => results.classList.add('show'), 100);
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const minTimer = 50;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            stepTime = Math.max(stepTime, minTimer);
+
+            let startTime = new Date().getTime();
+            let endTime = startTime + duration;
+            let timer;
+
+            function run() {
+                let now = new Date().getTime();
+                let remaining = Math.max((endTime - now) / duration, 0);
+                let value = Math.round(end - (remaining * range));
+                obj.textContent = value.toLocaleString();
+                if (value == end) {
+                    clearInterval(timer);
+                }
+            }
+
+            timer = setInterval(run, stepTime);
+            run();
+        }
+    </script>
+</body>
+</html>
