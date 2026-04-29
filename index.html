@@ -4,40 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Age Calculator Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0f172a;
             --bg-secondary: #1e293b;
-            --bg-card: rgba(30, 41, 59, 0.8);
-            --text-primary: #f1f5f9;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --accent: #38bdf8;
             --accent-hover: #0ea5e9;
-            --border: rgba(148, 163, 184, 0.2);
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --border: rgba(148, 163, 184, 0.15);
             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.03);
             --success: #22c55e;
-            --warning: #f59e0b;
             --danger: #ef4444;
             --danger-hover: #dc2626;
+            --input-bg: rgba(15, 23, 42, 0.6);
         }
 
         [data-theme="light"] {
             --bg-primary: #f8fafc;
             --bg-secondary: #f1f5f9;
-            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-card: rgba(255, 255, 255, 0.85);
             --text-primary: #0f172a;
             --text-secondary: #64748b;
             --accent: #0284c7;
             --accent-hover: #0369a1;
-            --border: rgba(148, 163, 184, 0.3);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-            --glass: rgba(255, 255, 255, 0.6);
+            --accent-glow: rgba(2, 132, 199, 0.2);
+            --border: rgba(148, 163, 184, 0.25);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            --glass: rgba(255, 255, 255, 0.5);
             --success: #16a34a;
-            --warning: #d97706;
             --danger: #dc2626;
             --danger-hover: #b91c1c;
+            --input-bg: rgba(241, 245, 249, 0.8);
         }
 
         * {
@@ -47,7 +49,7 @@
         }
 
         body {
-            font-family: 'Nunito', 'Outfit', sans-serif;
+            font-family: 'Nunito', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
@@ -55,7 +57,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.6s ease, color 0.6s ease;
             position: relative;
             overflow-x: hidden;
         }
@@ -63,19 +65,27 @@
         body::before {
             content: '';
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 50%);
-            opacity: 0.03;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, var(--accent-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, var(--accent-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+            animation: bgPulse 8s ease-in-out infinite;
             pointer-events: none;
             z-index: 0;
         }
 
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 580px;
             position: relative;
             z-index: 1;
         }
@@ -87,133 +97,194 @@
             background: var(--glass);
             border: 1px solid var(--border);
             border-radius: 50px;
-            padding: 8px 16px;
+            padding: 10px 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             color: var(--text-secondary);
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 700;
             font-family: 'Nunito', sans-serif;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .theme-toggle:hover {
             background: var(--accent);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px -5px var(--accent-glow);
         }
 
         .theme-icon {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            transition: transform 0.5s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
         }
 
         .header {
             text-align: center;
             margin-bottom: 2.5rem;
-            margin-top: 3rem;
+            margin-top: 3.5rem;
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2.75rem;
             font-weight: 800;
-            font-family: 'Outfit', 'Nunito', sans-serif;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 100%);
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #818cf8 50%, var(--text-primary) 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.03em;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .header p {
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 500;
+            letter-spacing: 0.01em;
         }
 
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 2.5rem;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow);
-            transition: all 0.5s ease;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 
+                var(--shadow),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            box-shadow: 
+                var(--shadow),
+                0 0 60px -10px var(--accent-glow),
+                0 0 0 1px rgba(255, 255, 255, 0.08) inset;
         }
 
         .input-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.1s; }
+        .input-group:nth-child(2) { animation-delay: 0.2s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
             font-weight: 700;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             font-family: 'Outfit', sans-serif;
         }
 
         .input-wrapper {
             position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            transform: scale(1.01);
         }
 
         .input-wrapper input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1.1rem 1.1rem 1.1rem 3.2rem;
             border: 2px solid var(--border);
-            border-radius: 16px;
-            background: var(--glass);
+            border-radius: 18px;
+            background: var(--input-bg);
             color: var(--text-primary);
             font-size: 1rem;
             font-family: 'Nunito', sans-serif;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             outline: none;
+            cursor: pointer;
+        }
+
+        .input-wrapper input:hover {
+            border-color: rgba(56, 189, 248, 0.4);
         }
 
         .input-wrapper input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 0 4px var(--accent-glow), 0 0 20px -5px var(--accent-glow);
+            background: var(--bg-card);
         }
 
         .input-icon {
             position: absolute;
-            left: 1rem;
+            left: 1.1rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-secondary);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: var(--accent);
+            transform: translateY(-50%) scale(1.1);
         }
 
         .button-group {
             display: grid;
             grid-template-columns: 1fr auto;
-            gap: 0.75rem;
+            gap: 0.875rem;
             margin-top: 0.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease 0.3s forwards;
         }
 
         .calculate-btn {
             width: 100%;
-            padding: 1.1rem;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            padding: 1.15rem;
+            background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
+            background-size: 200% 200%;
             color: white;
             border: none;
-            border-radius: 16px;
+            border-radius: 18px;
             font-size: 1.1rem;
-            font-weight: 700;
+            font-weight: 800;
             font-family: 'Outfit', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.02em;
+            box-shadow: 0 10px 30px -10px var(--accent-glow);
         }
 
         .calculate-btn::before {
@@ -223,8 +294,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left 0.7s ease;
         }
 
         .calculate-btn:hover::before {
@@ -232,124 +303,162 @@
         }
 
         .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px -10px var(--accent);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 50px -10px var(--accent-glow);
+            background-position: 100% 0;
         }
 
         .calculate-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px) scale(0.98);
         }
 
         .reset-btn {
-            padding: 1.1rem 1.5rem;
-            background: transparent;
+            padding: 1.15rem 1.75rem;
+            background: var(--glass);
             color: var(--text-secondary);
             border: 2px solid var(--border);
-            border-radius: 16px;
+            border-radius: 18px;
             font-size: 1rem;
             font-weight: 700;
             font-family: 'Outfit', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             white-space: nowrap;
+            backdrop-filter: blur(10px);
         }
 
         .reset-btn:hover {
             border-color: var(--danger);
             color: var(--danger);
-            background: rgba(239, 68, 68, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(239, 68, 68, 0.2);
         }
 
         .reset-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .results {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: none;
         }
 
         .results.show {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
             display: block;
         }
 
         .results-header {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .results-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 800;
             font-family: 'Outfit', sans-serif;
             color: var(--text-primary);
+            letter-spacing: -0.02em;
         }
 
         .results-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 0.75rem;
+            gap: 0.875rem;
         }
 
         .result-item {
             background: var(--glass);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.25rem 0.5rem;
+            border-radius: 20px;
+            padding: 1.5rem 0.5rem;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #818cf8);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
         }
 
         .result-item:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             border-color: var(--accent);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 40px -10px var(--accent-glow);
+        }
+
+        .result-item:hover::before {
+            transform: scaleX(1);
         }
 
         .result-value {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--accent);
             line-height: 1;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
+            transition: transform 0.3s ease;
+        }
+
+        .result-item:hover .result-value {
+            transform: scale(1.1);
         }
 
         .result-label {
             font-size: 0.7rem;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 600;
+            letter-spacing: 0.12em;
+            font-weight: 700;
             font-family: 'Outfit', sans-serif;
         }
 
         .total-days {
-            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+            background: linear-gradient(135deg, var(--success) 0%, #10b981 100%);
             color: white;
-            border-radius: 16px;
-            padding: 1.25rem;
+            border-radius: 20px;
+            padding: 1.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
-            margin-top: 1rem;
+            margin-top: 1.25rem;
             display: none;
+            box-shadow: 0 15px 35px -10px rgba(34, 197, 94, 0.3);
         }
 
         .total-days.show {
             display: block;
-            animation: fadeInUp 0.5s ease;
+            animation: slideUpFade 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .total-days::before {
@@ -359,77 +468,112 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(5deg); }
         }
 
         .total-days-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             opacity: 0.9;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
             position: relative;
             z-index: 1;
-            font-weight: 600;
+            font-weight: 700;
             font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.05em;
         }
 
         .total-days-value {
             font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 800;
             position: relative;
             z-index: 1;
+            letter-spacing: -0.02em;
         }
 
         .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-top: 1rem;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: var(--danger);
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+            margin-top: 1.25rem;
             display: none;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             font-size: 0.9rem;
             font-weight: 600;
+            backdrop-filter: blur(10px);
+            animation: shake 0.5s ease;
         }
 
         .error-message.show {
             display: flex;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .results.show .result-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .results.show .result-item:nth-child(1) { animation-delay: 0.1s; }
+        .results.show .result-item:nth-child(2) { animation-delay: 0.2s; }
+        .results.show .result-item:nth-child(3) { animation-delay: 0.3s; }
+        .results.show .result-item:nth-child(4) { animation-delay: 0.4s; }
+        .results.show .result-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes popIn {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        @media (max-width: 580px) {
+        @media (max-width: 600px) {
             .results-grid {
                 grid-template-columns: repeat(3, 1fr);
+                gap: 0.625rem;
+            }
+            .result-item {
+                padding: 1.25rem 0.375rem;
+            }
+            .result-value {
+                font-size: 1.6rem;
             }
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.25rem;
             }
             .card {
-                padding: 1.5rem;
+                padding: 1.75rem;
+                border-radius: 24px;
             }
             .button-group {
                 grid-template-columns: 1fr;
             }
             .reset-btn {
-                padding: 0.9rem;
+                padding: 1rem;
             }
         }
 
         @media (max-width: 380px) {
             .results-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .header h1 {
+                font-size: 1.875rem;
             }
         }
     </style>
@@ -444,7 +588,7 @@
 
         <div class="header">
             <h1>Age Calculator</h1>
-            <p>Made by Shohidul Islam</p>
+            <p>Calculate precise age with date & time</p>
         </div>
 
         <div class="card">
@@ -516,13 +660,20 @@
     </div>
 
     <script>
+        const DEFAULT_YEAR = 2026;
+        const DEFAULT_MONTH = 0;  // January
+        const DEFAULT_DAY = 1;
+        const DEFAULT_HOUR = 0;   // 12:00 AM
+        const DEFAULT_MINUTE = 0;
+
+        function getDefaultDob() {
+            return new Date(DEFAULT_YEAR, DEFAULT_MONTH, DEFAULT_DAY, DEFAULT_HOUR, DEFAULT_MINUTE);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
-            const formatted = formatDateTimeLocal(now);
-            document.getElementById('targetDate').value = formatted;
-
-            const defaultDob = new Date(now.getFullYear() - 25, now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
-            document.getElementById('dob').value = formatDateTimeLocal(defaultDob);
+            document.getElementById('targetDate').value = formatDateTimeLocal(now);
+            document.getElementById('dob').value = formatDateTimeLocal(getDefaultDob());
         });
 
         function formatDateTimeLocal(date) {
@@ -559,16 +710,21 @@
         }
 
         function resetForm() {
-            document.getElementById('dob').value = '';
+            // Reset DOB to 01-Jan-2026 12:00 AM
+            document.getElementById('dob').value = formatDateTimeLocal(getDefaultDob());
 
+            // Reset target to current datetime
             const now = new Date();
             document.getElementById('targetDate').value = formatDateTimeLocal(now);
 
+            // Hide results
             const results = document.getElementById('results');
             results.classList.remove('show');
 
+            // Hide error
             document.getElementById('errorMessage').classList.remove('show');
 
+            // Reset values
             document.getElementById('years').textContent = '0';
             document.getElementById('months').textContent = '0';
             document.getElementById('days').textContent = '0';
@@ -633,7 +789,6 @@
             animateValue('hours', 0, hours, 1000);
             animateValue('minutes', 0, minutes, 1000);
 
-            // Show total days only if over 30 days
             const totalDaysBox = document.getElementById('totalDaysBox');
             if (totalDays > 30) {
                 animateValue('totalDays', 0, totalDays, 1500);
@@ -644,7 +799,7 @@
 
             const results = document.getElementById('results');
             results.classList.remove('show');
-            setTimeout(() => results.classList.add('show'), 100);
+            setTimeout(() => results.classList.add('show'), 50);
         }
 
         function animateValue(id, start, end, duration) {
